@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+import colorsys
 import glob
 from kMeansDomColor import KMeansDominantColorAlg
 
@@ -18,10 +18,16 @@ def main():
         imageID = path[path.rfind("/") + 1:]
         # Generate the descriptor features 
         myCD.describe(path)
-
         # Append to the list of features for top K dominant colors
-        features = [str(featureVector) for featureVector in myCD.dominantColors]
+        features = [featureVector for featureVector in myCD.dominantColors]
         print features
+        hsvFeatures = []
+        # Conversion to hsv space 
+        for f in features:
+            # Normalize rgb values before passing to colorsys.rgb_to_hsv
+            hsvFeatures.append(colorsys.rgb_to_hsv(f[0]/255.0, f[1]/255.0, f[2]/255.0))
+        
+        features = [hsvVector for hsvVector in hsvFeatures]   
         # Write the index file with the descriptor values
         output.write("%s,%s\n" % (imageID, ",".join(features))) 
          
