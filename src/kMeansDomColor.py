@@ -7,7 +7,7 @@ from PIL import Image
 Point = namedtuple('Point', ('coords', 'n', 'ct'))
 Cluster = namedtuple('Cluster', ('points', 'center', 'n'))
 # Lambda to generate RGB color code
-rtoh = lambda rgb: '#%s' % ''.join(('%02x' % p for p in rgb))
+# rtoh = lambda rgb: '#%s' % ''.join(('%02x' % p for p in rgb))
 
 ## @class This class implements a K-means based algorithm to find the top K dominant colors in the image
 #  @param imageFile Takes as input the path to the image file    
@@ -26,14 +26,14 @@ class KMeansDominantColorAlg:
         self.dominantColors = features
         
    
-    def getDomColors(self, image, dim=5):
+    def getDomColors(self, image, dim=3):
         # Generate the datapoints
         points = self.getPoints(image)
         # Find the k clusters
         clusters = self.kmeans(points, dim, 1)
-        #
+        # Return back to RGB space from point space
         rgbs = [map(int, c.center.coords) for c in clusters]
-        return map(rtoh, rgbs)
+        return rgbs
     
     def getPoints(self, image, dim=3):
         points = []
@@ -106,9 +106,9 @@ class KMeansDominantColorAlg:
         return Point([(v/pLength) for v in vals], n, 1)
         
 
-if __name__ == "__main__":
-    desc = KMeansDominantColorAlg(0)
-    features = desc.describe("../images/image2.jpg")
-    print desc.dominantColors 
+# if __name__ == "__main__":
+#     desc = KMeansDominantColorAlg(0)
+#     features = desc.describe("../images/image2.jpg")
+#     print desc.dominantColors 
         
     
