@@ -4,13 +4,15 @@ import glob
 from kMeansDomColor import KMeansDominantColorAlg
 
 imagePath = "../images"
-indexFile = "../outputIndex.txt"
+indexFile = "../outputIndex.csv"
 
 def main():
     # Initialize k-means algorithm object
     myCD = KMeansDominantColorAlg(0);
     # Open index file to be written
     output = open(indexFile, "w")
+    
+    output.write("%s|(%s)|(%s)|(%s)|(%s)|(%s)\n" % ("imageName", "1st-color", "2nd-color", "3rd-color", "4th-color", "5th-color")) 
     # Step through the image path jpeg files
     for path in glob.glob(imagePath + "/*.jpg"):
         print "Processing: " + path
@@ -20,16 +22,23 @@ def main():
         myCD.describe(path)
         # Append to the list of features for top K dominant colors
         features = [featureVector for featureVector in myCD.dominantColors]
-        print features
         hsvFeatures = []
         # Conversion to hsv space 
         for f in features:
             # Normalize rgb values before passing to colorsys.rgb_to_hsv
-            hsvFeatures.append(colorsys.rgb_to_hsv(f[0]/255.0, f[1]/255.0, f[2]/255.0))
+            hsvFeatures.append(colorsys.rgb_to_hsv(f[0]/255.0, f[1]/255.0, f[2]/255.0)) 
         
-        features = [hsvVector for hsvVector in hsvFeatures]   
+        features = []
+        # denormalize hsv feature vector back
+        for f in hsvFeatures:
+            features.append(tuple([int(f[0]*360), int(f[1]*100), int(f[2]*100)]))
+        
+           
+        features = [str(hsvVector) for hsvVector in features]
+        print features
         # Write the index file with the descriptor values
-        output.write("%s,%s\n" % (imageID, ",".join(features))) 
+
+        output.write("%s|%s\n" % (imageID, "|".join(features))) 
          
     # Close the fp of index file
     output.close()       
