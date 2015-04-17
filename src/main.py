@@ -12,7 +12,7 @@ def main():
     # Open index file to be written
     output = open(indexFile, "w")
     
-    output.write("%s|(%s)|(%s)|(%s)|(%s)|(%s)\n" % ("imageName", "1st-color", "2nd-color", "3rd-color", "4th-color", "5th-color")) 
+    output.write("%s|(%s)|(%s)|(%s)|(%s)|(%s)\n" % ("imagename", "1st-color", "2nd-color", "3rd-color", "4th-color", "5th-color")) 
     # Step through the image path jpeg files
     for path in glob.glob(imagePath + "/*.jpg"):
         print "Processing: " + path
