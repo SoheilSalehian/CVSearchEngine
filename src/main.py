@@ -3,6 +3,8 @@ import colorsys
 import glob
 from kMeansDomColor import KMeansDominantColorAlg
 
+
+
 imagePath = "../images"
 indexFile = "../outputIndex.csv"
 
@@ -12,7 +14,9 @@ def main():
     # Open index file to be written
     output = open(indexFile, "w")
     
-    output.write("%s|(%s)|(%s)|(%s)|(%s)|(%s)\n" % ("imagename", "1st-color", "2nd-color", "3rd-color", "4th-color", "5th-color")) 
+    output.write("%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n" % ("imagename", "h1", "s1", "v1", \
+                                                  "h2", "s2", "v2",\
+                                                  "h3", "s3", "v3")) 
     # Step through the image path jpeg files
     for path in glob.glob(imagePath + "/*.jpg"):
         print "Processing: " + path
@@ -33,17 +37,20 @@ def main():
         for f in hsvFeatures:
             features.append(tuple([int(f[0]*360), int(f[1]*100), int(f[2]*100)]))
         
-           
-        features = [str(hsvVector) for hsvVector in features]
-        print features
+        finalFeatures = []
+        for f in features:
+            finalFeatures.append(str(f[0]))
+            finalFeatures.append(str(f[1]))
+            finalFeatures.append(str(f[2]))
+        print finalFeatures
+            
         # Write the index file with the descriptor values
-
-        output.write("%s|%s\n" % (imageID, "|".join(features))) 
+        output.write("%s|%s\n" % (imageID, "|".join(finalFeatures))) 
          
     # Close the fp of index file
     output.close()       
       
-    
+
         
         
     
