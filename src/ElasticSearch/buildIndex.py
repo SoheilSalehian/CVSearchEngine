@@ -90,17 +90,38 @@ res = es.bulk(index = INDEX_NAME, body = bulkData, refresh = True)
 # for hit in res['hits']['hits']:
 #     print(hit["_source"])
 
-res = es.search(index = INDEX_NAME, size=30, body={"query" : {
-                                            "filtered" : { 
-                                                "filter" : { 
-                                                  "range" : { 
-                                                     "h1" : { "gt" : 300, "lt":330}
-                                                   }
-                                                 
-                                                 }
-                                             }
-                                           }
-                                       })
+res = es.search(index = INDEX_NAME, size=7000, body={    
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        "h1": {
+                            "gt": "280",
+                            "lt": "340"
+                        }
+                    }
+                },
+                {
+                    "range": {
+                        "s1": {
+                            "gt": "20"
+                        }
+                    }
+                },     
+                {
+                    "range": {
+                        "v1": {
+                            "gt": "50"
+                        }
+                    }
+                },
+                    
+                
+            ]
+        }
+    }
+            })
 print(" response: '%s'" % (res))
 
 
@@ -110,13 +131,14 @@ for hit in res['hits']['hits']:
     hits.append((hit["_source"]["imagename"]))
 
 
+print(len(hits), 'hits') 
+print(es.count(index='imagerepo')['count'], 'documents in index')
+
 for img in hits:
     myImage = cv2.imread( "../../images/flickr/"+img)
     cv2.imshow("result", myImage)
-    cv2.waitKey(1000)
+    cv2.waitKey(500)
 
-print(len(hits), 'hits') 
-print(es.count(index='imagerepo')['count'], 'documents in index')
     
     
 
