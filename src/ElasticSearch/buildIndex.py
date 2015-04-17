@@ -15,6 +15,7 @@ ID_FIELD = 'imagename'
 
 import csv
 import urllib2
+import cv2
 
 from elasticsearch import Elasticsearch
 
@@ -27,24 +28,27 @@ csvFileObject = csv.reader(response, delimiter='|')
 header = csvFileObject.next()
 header = [item.lower() for item in header]
 
-print header
+
 
 
 bulkData = []
 # Move the data into dictionary format that ES python likes
 for row in csvFileObject:
     print row
-    print len(row)
     dataDict = {}
+#     dataDict['color'] = {}
     for i in range(len(row)):
-        dataDict[header[i]] = row[i]
-    print dataDict
+        if 'im' not in row[i]:
+            dataDict[header[i]] = int(row[i])
+        else:
+            dataDict[header[i]] = row[i]
+    print "data", dataDict
     # Meta data dictionary for the operation
     optDict = {
         "index": {
                   "_index": INDEX_NAME, 
                   "_type": TYPE_NAME, 
-                  "_id": dataDict[ID_FIELD]  
+                  "_id": dataDict[ID_FIELD] 
                   }
                }
     # Populate bulk data dictionary 
@@ -75,15 +79,45 @@ res = es.indices.create(index = INDEX_NAME, body = requestBody)
 print(" response: '%s'" % (res))
 
 # bulk index the data
-print("bulk indexing...")
+print "bulk indexing..."
 res = es.bulk(index = INDEX_NAME, body = bulkData, refresh = True)
 
 # sanity check
-res = es.search(index = INDEX_NAME, size=2, body={"query": {"match_all": {}}})
+# res = es.search(index = INDEX_NAME, size=2, body={"query": {"match_all": {}}})
+# print(" response: '%s'" % (res))
+# 
+# print "results:"
+# for hit in res['hits']['hits']:
+#     print(hit["_source"])
+
+res = es.search(index = INDEX_NAME, size=30, body={"query" : {
+                                            "filtered" : { 
+                                                "filter" : { 
+                                                  "range" : { 
+                                                     "h1" : { "gt" : 300, "lt":330}
+                                                   }
+                                                 
+                                                 }
+                                             }
+                                           }
+                                       })
 print(" response: '%s'" % (res))
 
-print("results:")
+
+hits = []
 for hit in res['hits']['hits']:
-    print(hit["_source"])
+    print("h1:", hit["_source"]["h1"])
+    hits.append((hit["_source"]["imagename"]))
+
+
+for img in hits:
+    myImage = cv2.imread( "../../images/flickr/"+img)
+    cv2.imshow("result", myImage)
+    cv2.waitKey(1000)
+
+print(len(hits), 'hits') 
+print(es.count(index='imagerepo')['count'], 'documents in index')
+    
+    
 
     

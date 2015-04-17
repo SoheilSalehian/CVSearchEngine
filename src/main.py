@@ -5,7 +5,7 @@ from kMeansDomColor import KMeansDominantColorAlg
 
 
 
-imagePath = "../images"
+imagePath = "../images/flickr/"
 indexFile = "../outputIndex.csv"
 
 def main():
