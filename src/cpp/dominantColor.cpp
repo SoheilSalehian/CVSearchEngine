@@ -28,13 +28,6 @@ int main(int argc, char* argv[])
 
   kMeans(hsv);
 
-  namedWindow( "Display window", CV_WINDOW_AUTOSIZE );  
-  imshow( "Display window", image );                 
-
-  namedWindow( "Result window", CV_WINDOW_AUTOSIZE );   
-  imshow( "Result window", hsv );
-
-  waitKey(0);                                          
   return 0;
 }
 
@@ -54,6 +47,14 @@ int kMeans(Mat src) {
 
   kmeans(samples, clusterCount, labels, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers );
 
-  std::cout << "Center: "<< centers << std::endl;
+  for( size_t i = 0; i < 5; i++ ) {
+    for( size_t j = 0; j < 3; j++ ) {
+      printf( " %f  ", centers.at<float>(i,j) );
+    }
+    printf("|");
+  }
+  printf ("\n");
+
   return 0;
 }
+
